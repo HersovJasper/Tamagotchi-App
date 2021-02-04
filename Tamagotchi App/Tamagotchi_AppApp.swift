@@ -11,7 +11,7 @@ import SwiftUI
 struct Tamagotchi_AppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(alerts: "Game has started")
         }
     }
 }
