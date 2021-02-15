@@ -10,20 +10,23 @@ import SwiftUI
 struct ContentView: View {
     
     @StateObject private var tamagotchi = Tamagotchi()
-    @State private var remainingTime = 30
-    @State var alerts: String{
+    @State private var remainingTime = 45{
         didSet {
             if remainingTime > 0{
-                if tamagotchi.howIll > 5{
-                    alerts = "Tamagotchi is dying"
-                } else if tamagotchi.hunger > 10{
+                if tamagotchi.howIll >= 10{
+                    remainingTime = 0
+                }
+                else if tamagotchi.howIll >= 5{
+                    self.alerts = "Tamagotchi is about to die"
+                } else if tamagotchi.hunger >= 10{
                     self.alerts = "Tamagotchi is hungry"
                 }
             }else{
-                alerts = "Time up. Age reached: \(tamagotchi.age)"
+                self.alerts = "Game Over. Age reached: \(tamagotchi.age)"
             }
         }
     }
+    @State var alerts: String
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -41,14 +44,19 @@ struct ContentView: View {
                         remainingTime -= 1
                         tamagotchi.age += 1
                         if remainingTime%2 == 0{
-                            tamagotchi.hunger += 1
+                            tamagotchi.hunger += 2
+                        }
+                        if tamagotchi.hunger > 10{
+                            if remainingTime%1 == 0{
+                                tamagotchi.howIll += 1
+                            }
                         }
                     }
                 }
         
             Form {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("You have 30 seconds to keep your Tamagotchi alive as long as possible. It gets hungrier as time goes on. Keep feeding it and use medicine if it is ill. If it is ill for more than 5 seconds it will die. Going to the bathroom may make it better or worse!!!").font(.system(size: 12, weight: .light, design: .serif))
+                    Text("You have 45 seconds to keep your Tamagotchi alive as long as possible. It gets hungrier as time goes on. Keep feeding it and use medicine if it is ill. If it is ill for more than 5 seconds it will die. Going to the bathroom may make it better or worse!!!").font(.system(size: 12, weight: .light, design: .serif))
                     Text(alerts).font(.headline).foregroundColor(.red)
                     Text("\(tamagotchi.displayStats())")
                 }
